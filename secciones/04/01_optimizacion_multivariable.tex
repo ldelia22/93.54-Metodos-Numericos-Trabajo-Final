@@ -1,0 +1,88 @@
+\subsection{Problemas de optimización multivariable}
+
+El problema general de optimización multivariable consiste en determinar un vector de variables:
+
+\[
+x^* \in \mathbb{R}^n
+\]
+
+tal que una función escalar:
+
+\[
+f : \mathbb{R}^n \rightarrow \mathbb{R}
+\]
+
+alcance un valor mínimo dentro de un dominio factible \(\Omega \subseteq \mathbb{R}^n\). Matemáticamente, esto puede expresarse como:
+
+\[
+f(x^*) \leq f(x)
+\qquad
+\forall x \in \Omega
+\]
+
+La función \(f(x)\) recibe el nombre de función objetivo y representa la magnitud que se desea minimizar. El vector:
+
+\[
+x =
+\begin{pmatrix}
+x_1 & x_2 & \cdots & x_n
+\end{pmatrix}^T
+\]
+
+contiene las variables independientes del problema, mientras que el conjunto \(\Omega\) representa el espacio de soluciones admisibles.
+
+En problemas reales de gran dimensión, encontrar analíticamente el mínimo exacto de una función resulta generalmente imposible. En consecuencia, los métodos numéricos construyen una sucesión iterativa de aproximaciones:
+
+\[
+x_0, x_1, x_2, \dots , x_k , \dots
+\]
+
+tal que cada nueva iteración produzca una disminución del valor de la función objetivo:
+
+\[
+f(x_{k+1}) < f(x_k)
+\]
+
+La esperanza es que esta sucesión converja hacia un punto estacionario de la función.
+
+Si \(f\) es diferenciable, una condición necesaria para que un punto interior \(x^*\) corresponda a un mínimo local es que el gradiente de la función se anule en dicho punto:
+
+\[
+\nabla f(x^*) = 0
+\]
+
+El gradiente de una función escalar de \(n\) variables se define como:
+
+\[
+\nabla f(x) =
+\begin{pmatrix}
+\frac{\partial f}{\partial x_1} \\
+\frac{\partial f}{\partial x_2} \\
+\vdots \\
+\frac{\partial f}{\partial x_n}
+\end{pmatrix}
+\]
+
+Cada componente del gradiente representa la tasa de variación local de la función respecto de una de las variables independientes. Geométricamente, el gradiente apunta en la dirección de máximo crecimiento local de la función.
+
+Sin embargo, la condición:
+
+\[
+\nabla f(x)=0
+\]
+
+no garantiza necesariamente la existencia de un mínimo. Dependiendo de la geometría local de la función, un punto estacionario también puede corresponder a un máximo local o a un punto silla. La clasificación de estos puntos requiere analizar la curvatura local de la función mediante derivadas de segundo orden.
+
+Debido a que resolver analíticamente la ecuación \(\nabla f(x)=0\) suele ser inviable en problemas de gran dimensión, los métodos iterativos construyen aproximaciones sucesivas de la solución mediante actualizaciones de la forma:
+
+\[
+x_{k+1}=x_k+\alpha_k p_k
+\]
+
+donde:
+\begin{itemize}
+    \item \(p_k\) representa una dirección de búsqueda,
+    \item \(\alpha_k\) representa el tamaño de paso asociado a dicha dirección.
+\end{itemize}
+
+Toda la teoría de optimización iterativa puede interpretarse, esencialmente, como distintos criterios para construir adecuadamente la dirección \(p_k\) y determinar el valor óptimo de \(\alpha_k\) en cada iteración.
