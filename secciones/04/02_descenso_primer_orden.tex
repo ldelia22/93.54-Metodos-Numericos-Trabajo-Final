@@ -1,2 +1,114 @@
 \subsection{Métodos de descenso de primer orden}
 
+Los métodos de descenso de primer orden construyen la dirección de búsqueda utilizando exclusivamente información de primer orden de la función objetivo, es decir, su gradiente.
+
+La idea fundamental consiste en determinar una dirección que produzca una disminución local de la función al desplazarse desde el punto actual \(x_k\). Para analizar matemáticamente cómo varía la función ante pequeños desplazamientos, se introduce el concepto de derivada direccional.
+
+Sea:
+\[
+p\in\mathbb{R}^n
+\]
+
+una dirección arbitraria. La derivada direccional de una función diferenciable \(f\) en el punto \(x\) y en la dirección \(p\) se define como:
+\[
+D_pf(x)=
+\lim_{h\to0}
+\frac{f(x+hp)-f(x)}{h}
+\]
+
+Esta expresión representa la tasa de variación instantánea de la función al desplazarse desde \(x\) en dirección \(p\).
+
+Si la función es diferenciable, la derivada direccional puede escribirse como:
+\[
+D_pf(x)=\nabla f(x)^Tp
+\]
+
+La expresión:
+\[
+\nabla f(x)^Tp
+\]
+
+corresponde al producto interno entre el gradiente y el vector dirección \(p\). En consecuencia, la derivada direccional mide cuánto cambia localmente la función al proyectar el gradiente sobre la dirección considerada.
+
+Para que un desplazamiento produzca una disminución local de la función debe cumplirse:
+\[
+D_pf(x)<0
+\]
+
+o equivalentemente:
+\[
+\nabla f(x)^Tp<0
+\]
+
+Toda dirección que satisfaga esta condición recibe el nombre de dirección de descenso.
+
+Entre todas las posibles direcciones de descenso, resulta particularmente importante aquella que produce la máxima disminución local de la función. Para determinarla, se considera el siguiente problema:
+\[
+\min_{\|p\|=1}\nabla f(x)^Tp
+\]
+
+La restricción:
+\[
+\|p\|=1
+\]
+
+se introduce para evitar que el producto interno pueda hacerse arbitrariamente pequeño simplemente aumentando la magnitud del vector \(p\).
+
+Aplicando la desigualdad de Cauchy-Schwarz:
+\[
+|\nabla f(x)^Tp|
+\leq
+\|\nabla f(x)\|\,\|p\|
+\]
+
+y utilizando la condición \(\|p\|=1\), se obtiene:
+\[
+|\nabla f(x)^Tp|
+\leq
+\|\nabla f(x)\|
+\]
+
+Por lo tanto:
+\[
+-\|\nabla f(x)\|
+\leq
+\nabla f(x)^Tp
+\leq
+\|\nabla f(x)\|
+\]
+
+El menor valor posible del producto interno corresponde entonces a:
+\[
+\nabla f(x)^Tp=
+-\|\nabla f(x)\|
+\]
+
+La igualdad en la desigualdad de Cauchy-Schwarz se alcanza únicamente cuando ambos vectores poseen la misma dirección o direcciones opuestas. En este caso, el mínimo se obtiene cuando \(p\) posee dirección opuesta al gradiente. En consecuencia, la dirección de máximo descenso local viene dada por:
+\[
+p_k=-\nabla f(x_k)
+\]
+
+Esta elección conduce al método de descenso por gradiente o \textit{steepest descent}, cuya actualización iterativa toma la forma:
+\[
+x_{k+1}=x_k-\alpha_k\nabla f(x_k)
+\]
+
+Una vez determinada la dirección de descenso, resta establecer cuánto avanzar sobre dicha dirección. El parámetro \(\alpha_k\) controla precisamente la magnitud del desplazamiento realizado durante cada iteración.
+
+Para determinar el valor adecuado de \(\alpha_k\), se restringe la función objetivo a la recta generada por la dirección de búsqueda. Esto se realiza definiendo la función auxiliar:
+\[
+\phi(\alpha)=f(x_k+\alpha p_k)
+\]
+
+La variable \(\alpha\) parametriza todos los puntos de la recta que pasa por \(x_k\) en dirección \(p_k\). De esta manera, el problema multivariable original se reduce localmente a un problema de optimización unidimensional.
+
+El objetivo de la búsqueda lineal (\textit{line search}) consiste en encontrar un valor de \(\alpha_k\) tal que:
+\[
+\phi(\alpha_k)<\phi(0)
+\]
+
+garantizando así una disminución efectiva de la función objetivo en cada iteración.
+
+A pesar de su simplicidad conceptual y bajo costo computacional, los métodos de descenso de primer orden presentan limitaciones importantes. Cuando la función posee curvaturas muy diferentes según la dirección considerada, el algoritmo puede exhibir trayectorias oscilatorias y convergencia lenta. Este comportamiento surge debido a que el método utiliza únicamente información de pendiente local, sin incorporar información explícita sobre la curvatura de la superficie de optimización.
+
+Estas limitaciones motivan el desarrollo de métodos de segundo orden, capaces de incorporar información de curvatura local mediante derivadas segundas de la función objetivo.

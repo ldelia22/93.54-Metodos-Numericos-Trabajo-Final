@@ -1,2 +1,165 @@
 \subsection{Métodos de segundo orden}
 
+Los métodos de segundo orden incorporan información de curvatura local de la función objetivo mediante derivadas segundas. La herramienta matemática fundamental para ello es el desarrollo de Taylor multivariable.
+
+Sea:
+\[
+f:\mathbb{R}^n\rightarrow\mathbb{R}
+\]
+
+una función dos veces diferenciable. Entonces, alrededor de un punto \(x_k\), la función puede aproximarse localmente mediante un desarrollo de Taylor de segundo orden:
+\[
+f(x_k+\Delta x)
+\approx
+f(x_k)
++
+\nabla f(x_k)^T\Delta x
++
+\frac{1}{2}\Delta x^TH(x_k)\Delta x
+\]
+
+La expresión anterior constituye una aproximación cuadrática local de la función objetivo alrededor del punto \(x_k\). El primer término representa el valor actual de la función, el segundo término describe la variación lineal asociada al gradiente, mientras que el término cuadrático incorpora información sobre la curvatura local.
+
+La matriz:
+\[
+H(x_k)
+\]
+
+corresponde al Hessiano de la función evaluado en el punto \(x_k\), y se define como:
+\[
+H(x_k)=
+\begin{pmatrix}
+\frac{\partial^2f}{\partial x_1^2}
+&
+\frac{\partial^2f}{\partial x_1\partial x_2}
+&
+\cdots
+\\
+\frac{\partial^2f}{\partial x_2\partial x_1}
+&
+\frac{\partial^2f}{\partial x_2^2}
+&
+\cdots
+\\
+\vdots
+&
+\vdots
+&
+\ddots
+\end{pmatrix}
+\]
+
+Cada elemento del Hessiano describe cómo varía una componente del gradiente respecto de una determinada variable. Mientras que el gradiente contiene información sobre la pendiente local de la función, el Hessiano describe cómo dicha pendiente cambia al desplazarse en distintas direcciones del espacio.
+
+La importancia del Hessiano puede comprenderse analizando nuevamente la condición de optimalidad local. Si:
+\[
+\nabla f(x^*)=0
+\]
+
+entonces el comportamiento local de la función alrededor de \(x^*\) queda dominado por el término cuadrático del desarrollo de Taylor:
+\[
+f(x^*+\Delta x)
+\approx
+f(x^*)
++
+\frac{1}{2}\Delta x^TH(x^*)\Delta x
+\]
+
+La naturaleza del punto estacionario depende entonces del signo de la forma cuadrática:
+\[
+\Delta x^TH(x^*)\Delta x
+\]
+
+Si:
+\[
+\Delta x^TH(x^*)\Delta x>0
+\qquad
+\forall \Delta x\neq0
+\]
+
+el Hessiano se dice definido positivo y el punto estacionario corresponde a un mínimo local.
+
+Si:
+\[
+\Delta x^TH(x^*)\Delta x<0
+\qquad
+\forall \Delta x\neq0
+\]
+
+el Hessiano es definido negativo y el punto corresponde a un máximo local.
+
+Finalmente, si la forma cuadrática puede tomar tanto valores positivos como negativos dependiendo de la dirección considerada, el punto estacionario corresponde a un punto silla.
+
+Además de permitir clasificar puntos estacionarios, el desarrollo de Taylor de segundo orden también permite construir métodos iterativos de optimización considerablemente más eficientes que el descenso por gradiente.
+
+El objetivo continúa siendo generar una nueva aproximación \(x_{k+1}\) a partir del punto actual \(x_k\). Para ello, se considera nuevamente la aproximación cuadrática local:
+\[
+f(x_k+\Delta x)
+\approx
+f(x_k)
++
+\nabla f(x_k)^T\Delta x
++
+\frac{1}{2}\Delta x^TH(x_k)\Delta x
+\]
+
+donde \(\Delta x\) representa un desplazamiento respecto del punto actual.
+
+La idea fundamental consiste en determinar cuál es el desplazamiento \(\Delta x\) que minimiza localmente esta aproximación cuadrática. En otras palabras, el método busca aproximar el mínimo de la función original mediante el mínimo de la superficie cuadrática generada por el desarrollo de Taylor alrededor de \(x_k\).
+
+Como la expresión anterior corresponde a una función cuadrática respecto de \(\Delta x\), su mínimo puede obtenerse imponiendo que su derivada respecto del desplazamiento se anule.
+
+Derivando término a término respecto de \(\Delta x\):
+\[
+\frac{\partial}{\partial (\Delta x)}
+f(x_k)
+=
+0
+\]
+
+ya que \(f(x_k)\) es constante respecto del desplazamiento.
+
+Para el término lineal:
+\[
+\frac{\partial}{\partial (\Delta x)}
+\left(
+\nabla f(x_k)^T\Delta x
+\right)
+=
+\nabla f(x_k)
+\]
+
+mientras que para el término cuadrático:
+\[
+\frac{\partial}{\partial (\Delta x)}
+\left(
+\frac{1}{2}\Delta x^TH(x_k)\Delta x
+\right)
+=
+H(x_k)\Delta x
+\]
+
+Por lo tanto, imponiendo la condición de estacionariedad:
+\[
+\nabla f(x_k)
++
+H(x_k)\Delta x
+=
+0
+\]
+
+y despejando el desplazamiento:
+\[
+\Delta x
+=
+-H(x_k)^{-1}\nabla f(x_k)
+\]
+
+La expresión anterior representa el desplazamiento que minimiza localmente la aproximación cuadrática de Taylor. Como el objetivo del algoritmo consiste precisamente en construir un desplazamiento que permita actualizar la solución actual, este desplazamiento se utiliza directamente como dirección de búsqueda. En consecuencia:
+\[
+p_k
+=
+-H(x_k)^{-1}\nabla f(x_k)
+\]
+
+Esta expresión define la dirección característica del método de Newton para optimización multivariable. A diferencia del descenso por gradiente, la dirección de búsqueda incorpora explícitamente información de curvatura local mediante el Hessiano.
