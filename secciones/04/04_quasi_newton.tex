@@ -1,2 +1,142 @@
 \subsection{Métodos quasi-Newton}
 
+El método de Newton para optimización, desarrollado en la sección anterior, presenta una limitación práctica determinante: requiere calcular e invertir el Hessiano en cada iteración. Para un problema con \(n\) variables, el Hessiano es una matriz de \(n \times n\) elementos, lo que implica un costo de almacenamiento de orden \(\mathcal{O}(n^2)\) y un costo computacional de inversión de orden \(\mathcal{O}(n^3)\). En problemas de gran escala, como la planificación inversa en radioterapia, donde el número de beamlets puede superar los miles, este requerimiento resulta inviable tanto en memoria como en tiempo de cómputo.
+
+Los métodos quasi-Newton resuelven este problema construyendo una \textit{aproximación} del Hessiano inverso a partir de la información de gradiente acumulada a lo largo de las iteraciones, sin necesidad de calcularlo explícitamente. La idea central consiste en explotar el cambio observado en el gradiente entre iteraciones sucesivas para inferir información sobre la curvatura local de la función.
+
+\subsubsection*{Condición de secante}
+
+Considérense las cantidades definidas entre la iteración \(k\) y la iteración \(k+1\):
+\[
+s_k = x_{k+1} - x_k
+\]
+\[
+y_k = \nabla f_{k+1} - \nabla f_k
+\]
+
+El vector \(s_k\) representa el desplazamiento realizado en el espacio de variables, mientras que \(y_k\) representa la variación correspondiente del gradiente. La relación entre ambas cantidades contiene información sobre la curvatura local: si un desplazamiento pequeño produce un cambio grande en el gradiente, la función presenta alta curvatura en esa región; si el cambio es pequeño, la región es un valle suave.
+
+En una dimensión, la derivada segunda puede aproximarse mediante la diferencia finita del gradiente:
+\[
+f''(x) \approx \frac{f'(x_{k+1}) - f'(x_k)}{x_{k+1} - x_k} = \frac{y_k}{s_k}
+\]
+
+lo que equivale a:
+\[
+f''(x) \cdot s_k \approx y_k
+\]
+
+Generalizando esta relación a múltiples dimensiones, se obtiene la denominada \textit{condición de secante}:
+\[
+H_{k+1}\, s_k = y_k
+\]
+
+Esta condición exige que la nueva aproximación del Hessiano sea consistente con la variación observada del gradiente. Sin embargo, esta sola ecuación no determina unívocamente \(H_{k+1}\): existe infinidad de matrices que la satisfacen. Es necesario imponer criterios adicionales para seleccionar una actualización bien definida.
+
+\subsubsection*{Construcción del Hessiano aproximado mediante multiplicadores de Lagrange}
+
+El método BFGS (Broyden--Fletcher--Goldfarb--Shanno) selecciona la actualización \(H_{k+1}\) que, además de satisfacer la condición de secante, cambie lo menos posible respecto a la aproximación anterior \(H_k\). Formalmente, se busca la matriz que resuelva el siguiente problema de optimización restringida:
+\[
+\min_{H_{k+1}}\; \frac{1}{2}\left\|H_{k+1} - H_k\right\|_F^2
+\qquad \text{sujeto a} \qquad H_{k+1}\, y_k = s_k
+\]
+
+donde \(\|\cdot\|_F\) denota la norma de Frobenius, definida como:
+\[
+\|A\|_F = \sqrt{\sum_i \sum_j |a_{ij}|^2} = \sqrt{\operatorname{tr}(A^T A)}
+\]
+
+Esta norma es el análogo matricial de la norma euclidiana vectorial, y su valor es invariante ante multiplicaciones por matrices ortogonales. Al ser un problema de minimización restringida, se puede resolver a partir de los multiplicadores de Lagrange.
+
+Para resolver este problema, se introduce el funcional de Lagrange:
+\[
+\mathcal{L}(H_{k+1},\, \lambda)
+=
+\frac{1}{2}\left\|H_{k+1} - H_k\right\|_F^2
++
+\lambda^T\!\left(H_{k+1}\, y_k - s_k\right)
+\]
+
+donde \(\lambda\) es el multiplicador de Lagrange asociado a la restricción de secante. Imponiendo la condición de estacionariedad respecto de \(H_{k+1}\) e igualando a cero:
+\[
+\frac{d\mathcal{L}}{dH_{k+1}}
+=
+(H_{k+1} - H_k) + \lambda y_k^T
+=
+0
+\]
+
+de donde se obtiene:
+\[
+H_{k+1} = H_k - \lambda y_k^T
+\]
+
+Para que \(H_{k+1}\) sea simétrica, el término \(\lambda y_k^T\) debe serlo también. Llamando \(A = \lambda y_k^T = A^T\) a dicho término simétrico, la expresión anterior toma la forma:
+\[
+H_{k+1} = H_k + A
+\]
+
+Imponiendo ahora la condición de secante sobre esta expresión:
+\[
+(H_k + A)\, y_k = s_k
+\quad\Rightarrow\quad
+A\, y_k = s_k - H_k\, y_k
+\]
+
+La matriz simétrica \(A\) más pequeña en norma de Frobenius que satisface esta ecuación corresponde a una \textit{actualización de rango 2}, cuya forma explícita resulta:
+\[
+H_{k+1}
+=
+H_k
++
+\frac{s_k s_k^T}{s_k^T y_k}
+-
+\frac{H_k y_k y_k^T H_k}{y_k^T H_k y_k}
+\]
+
+\subsubsection*{Reformulación en términos del Hessiano inverso}
+
+En la práctica, lo que se necesita en cada iteración no es \(H_{k+1}\) sino su inversa, para calcular la dirección de descenso \(p_k = -H_k^{-1} g_k\) sin resolver un sistema lineal. Llamando \(B_k = H_k^{-1}\), la condición de secante se reescribe como:
+\[
+B_{k+1}\, y_k = s_k
+\]
+
+y la fórmula de actualización análoga para la inversa es:
+\[
+B_{k+1}
+=
+B_k
++
+\frac{y_k y_k^T}{y_k^T s_k}
+-
+\frac{B_k s_k s_k^T B_k}{s_k^T B_k s_k}
+\]
+
+Aplicando la identidad de Sherman--Morrison--Woodbury, que permite invertir matrices de la forma \((A + uv^T)\) sin recomputar la inversa desde cero:
+\[
+(A + uv^T)^{-1} = A^{-1} - \frac{A^{-1}uv^T A^{-1}}{1 + v^T A^{-1} u}
+\]
+
+se puede reescribir la actualización de \(B_{k+1}\) en una forma más compacta y computacionalmente conveniente. Definiendo:
+\[
+\rho_k = \frac{1}{y_k^T s_k}
+\]
+
+el resultado final es la fórmula de actualización BFGS para el Hessiano inverso aproximado:
+\[
+\boxed{
+H_{k+1}
+=
+\left(I - \rho_k s_k y_k^T\right)
+H_k
+\left(I - \rho_k y_k s_k^T\right)
++
+\rho_k s_k s_k^T
+}
+\]
+
+donde \(I\) es la matriz identidad y \(H_0 = I\) es la inicialización estándar. Esta expresión constituye una actualización de rango 2 de la aproximación anterior: en cada iteración se incorpora nueva información de curvatura mediante la suma de dos matrices de rango 1. La estructura simétrica y la definición positiva de \(H_{k+1}\) quedan garantizadas siempre que \(y_k^T s_k > 0\), condición que se asegura mediante una búsqueda lineal adecuada.
+
+\subsubsection*{Limitación de memoria}
+
+A pesar de su eficiencia respecto al método de Newton exacto, el algoritmo BFGS sigue requiriendo almacenar y operar sobre una matriz densa de \(n \times n\) en cada iteración. En problemas de gran dimensión, esto continúa siendo prohibitivo. Esta limitación da lugar al algoritmo L-BFGS, que se desarrolla en la siguiente sección.
