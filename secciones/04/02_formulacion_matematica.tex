@@ -1,0 +1,208 @@
+\subsection{Formulación matemática del problema}
+
+La formulación matemática de la planificación inversa en IMRT se basa en modelar la relación existente entre las intensidades de irradiación administradas y la distribución de dosis absorbida por el paciente. Para ello, el volumen irradiado se discretiza espacialmente en un conjunto finito de elementos volumétricos denominados vóxeles, mientras que cada haz de radiación se subdivide en sub-haces elementales o \textit{beamlets}.
+
+Sea:
+\[
+x_j
+\]
+
+la intensidad asociada al beamlet \(j\), con:
+\[
+j=1,2,\dots,N
+\]
+
+donde \(N\) representa el número total de beamlets utilizados en el tratamiento. El conjunto completo de intensidades puede entonces representarse mediante el vector:
+\[
+x=
+\begin{pmatrix}
+x_1 & x_2 & \cdots & x_N
+\end{pmatrix}^T
+\]
+
+Cada beamlet contribuye parcialmente a la dosis absorbida en los distintos vóxeles del paciente. Debido a que la interacción radiación-materia puede aproximarse linealmente para este tipo de formulaciones, la dosis total absorbida en un vóxel puede expresarse como superposición lineal de las contribuciones individuales de todos los beamlets.
+
+Sea:
+\[
+d_i
+\]
+
+la dosis absorbida en el vóxel \(i\), con:
+\[
+i=1,2,\dots,M
+\]
+
+donde \(M\) representa el número total de vóxeles considerados en el modelo anatómico discretizado.
+
+La dosis depositada en el vóxel \(i\) puede escribirse como:
+\[
+d_i=
+\sum_{j=1}^{N}
+A_{ij}x_j
+\]
+
+donde:
+\[
+A_{ij}
+\]
+
+representa el coeficiente de deposición de dosis asociado al beamlet \(j\) sobre el vóxel \(i\). Físicamente, este coeficiente describe la cantidad de dosis depositada en el vóxel \(i\) por unidad de intensidad emitida desde el beamlet \(j\).
+
+Los coeficientes:
+\[
+A_{ij}
+\]
+
+constituyen la denominada matriz de deposición de dosis:
+\[
+A\in\mathbb{R}^{M\times N}
+\]
+
+la cual modela completamente la respuesta física del sistema de irradiación discretizado.
+
+La relación dosis--intensidad puede entonces expresarse compactamente en forma matricial mediante:
+\[
+d=Ax
+\]
+
+donde:
+\[
+d=
+\begin{pmatrix}
+d_1 & d_2 & \cdots & d_M
+\end{pmatrix}^T
+\]
+
+corresponde al vector de dosis absorbidas sobre todos los vóxeles del paciente.
+
+El problema inverso consiste entonces en determinar el vector de intensidades:
+\[
+x
+\]
+
+capaz de generar una distribución de dosis compatible con los requerimientos clínicos del tratamiento.
+
+Sin embargo, las restricciones dosimétricas impuestas sobre las distintas regiones anatómicas suelen ser incompatibles entre sí. Por este motivo, el problema no se formula como un sistema exacto de ecuaciones, sino como un problema de optimización en el cual se busca minimizar las desviaciones respecto de ciertos objetivos de dosis previamente establecidos.
+
+Para ello, el conjunto de vóxeles se divide en distintas estructuras anatómicas de interés clínico. Entre las más importantes se encuentran:
+
+\begin{itemize}
+    \item el volumen tumoral objetivo (\textit{Planning Target Volume}, PTV),
+    \item los órganos de riesgo (\textit{Organs At Risk}, OAR),
+    \item y el tejido sano circundante.
+\end{itemize}
+
+Cada una de estas regiones posee requerimientos dosimétricos diferentes. En el caso del volumen tumoral objetivo (PTV), el propósito consiste en lograr que todos los vóxeles reciban aproximadamente una dosis prescrita:
+\[
+D_{\text{ref}}
+\]
+
+Si:
+\[
+d_i
+\]
+
+representa la dosis absorbida en el vóxel \(i\), entonces la desviación respecto de la dosis prescrita puede cuantificarse mediante:
+\[
+(d_i-D_{\text{ref}})^2
+\]
+
+El uso de diferencias cuadráticas presenta varias ventajas matemáticas. Penaliza tanto excesos como defectos de dosis, hace que errores grandes resulten significativamente más costosos que errores pequeños y, además, produce funciones suaves y diferenciables.
+
+Promediando esta penalización sobre todos los vóxeles pertenecientes al PTV, se obtiene:
+\[
+F_{\text{PTV}}(x)
+=
+\frac{1}{N_{\text{PTV}}}
+\sum_{i\in \text{PTV}}
+(d_i-D_{\text{ref}})^2
+\]
+
+Esta función cuantifica la falta de homogeneidad de la irradiación tumoral. Cuanto menor sea el valor de:
+\[
+F_{\text{PTV}}
+\]
+
+más cercana será la distribución de dosis respecto de la prescripción deseada.
+
+Sustituyendo la relación física entre dosis e intensidades:
+\[
+d_i=
+\sum_{j=1}^{N}
+A_{ij}x_j
+\]
+
+la función objetivo pasa a escribirse explícitamente en términos de las intensidades de irradiación:
+\[
+F_{\text{PTV}}(x)
+=
+\frac{1}{N_{\text{PTV}}}
+\sum_{i\in \text{PTV}}
+\left(
+\sum_{j=1}^{N}
+A_{ij}x_j
+-
+D_{\text{ref}}
+\right)^2
+\]
+
+Para el tejido sano (\textit{Normal Tissue}, NT), el objetivo cambia completamente. En este caso no existe una dosis deseada distinta de cero. Idealmente, la irradiación fuera del volumen tumoral debería ser mínima. Para modelar este comportamiento, puede penalizarse directamente la magnitud de la dosis absorbida sobre dichos vóxeles:
+\[
+F_{\text{NT}}(x)
+=
+\frac{1}{N_{\text{NT}}}
+\sum_{i\in \text{NT}}
+d_i^2
+\]
+
+Esta función penaliza distribuciones que depositan dosis elevadas sobre regiones no tumorales.
+
+Para los órganos de riesgo (\textit{Organs At Risk}, OAR), el objetivo consiste en evitar que la dosis absorbida supere un determinado umbral clínicamente tolerable:
+\[
+D_{\text{crit}}
+\]
+
+Mientras la dosis permanezca por debajo de dicho límite, el daño puede considerarse aceptable. En consecuencia, la penalización debe activarse únicamente cuando la dosis excede el umbral crítico.
+
+La función objetivo asociada a órganos de riesgo puede escribirse como:
+\[
+F_{\text{OAR}}(x)
+=
+\frac{1}{N_{\text{OAR}}}
+\sum_{i\in \text{OAR}}
+\Theta(d_i-D_{\text{crit}})
+(d_i-D_{\text{crit}})^2
+\]
+
+donde:
+\[
+\Theta(\cdot)
+\]
+
+corresponde a la función escalón de Heaviside.
+
+Esta formulación produce penalización nula mientras:
+\[
+d_i<D_{\text{crit}}
+\]
+
+y comienza a crecer cuadráticamente cuando la dosis supera el límite tolerable.
+
+Las distintas funciones objetivo representan requerimientos clínicos simultáneos y, en general, conflictivos entre sí. Incrementar la cobertura tumoral suele aumentar también la irradiación sobre órganos sanos y tejido circundante. Como consecuencia, el problema adquiere naturalmente carácter multiobjetivo.
+
+La función objetivo global se construye entonces como combinación ponderada de las distintas contribuciones consideradas:
+\[
+F_{\text{tot}}(x)
+=
+\sum_{m=1}^{M}
+\lambda_m F_m(x)
+\]
+
+donde:
+\[
+\lambda_m
+\]
+
+representa el peso relativo asignado a cada objetivo clínico.
+
+Estos coeficientes permiten controlar el compromiso entre cobertura tumoral y preservación de estructuras sanas. En consecuencia, la planificación inversa en IMRT queda formulada como un problema de optimización multivariable de gran dimensión, donde las variables de decisión corresponden a las intensidades de los beamlets y la función objetivo global cuantifica simultáneamente el cumplimiento de múltiples criterios dosimétricos clínicamente relevantes.

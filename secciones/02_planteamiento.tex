@@ -1,1 +1,9 @@
 \section{Planteamiento del problema}
+
+La planificación inversa en radioterapia conduce naturalmente a un problema de optimización multivariable de gran escala.
+
+Desde el punto de vista computacional, la principal dificultad radica en que la cantidad de variables de optimización puede alcanzar dimensiones muy elevadas debido a la discretización espacial de los haces de irradiación. Simultáneamente, la función objetivo debe representar múltiples requerimientos clínicos que suelen resultar incompatibles entre sí, como maximizar la dosis administrada al volumen tumoral y minimizar la irradiación recibida por órganos sanos y tejido circundante.
+
+Estas características convierten al problema en un problema de optimización altamente condicionado y computacionalmente exigente. Los métodos basados exclusivamente en información de gradiente suelen presentar convergencia lenta en regiones con curvaturas fuertemente anisotrópicas, mientras que los métodos de Newton exacto resultan frecuentemente inviables debido al elevado costo asociado al cálculo, almacenamiento e inversión de matrices Hessianas de gran dimensión.
+
+En este contexto, los métodos quasi-Newton de memoria limitada constituyen una alternativa particularmente adecuada para este tipo de aplicaciones. Estos algoritmos permiten incorporar información aproximada de curvatura utilizando únicamente información local obtenida durante el proceso iterativo, evitando el almacenamiento explícito del Hessiano completo y reduciendo considerablemente los requerimientos computacionales del problema.
