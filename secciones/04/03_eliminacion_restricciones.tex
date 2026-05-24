@@ -1,0 +1,71 @@
+\subsection{Eliminación de restricciones de positividad}
+
+Las intensidades asociadas a los beamlets representan magnitudes físicas de irradiación y, por lo tanto, deben satisfacer la condición de no negatividad:
+\[
+w_j\geq0
+\qquad
+j=1,2,\dots,N
+\]
+
+ya que no existe físicamente una intensidad negativa de radiación.
+
+En consecuencia, el problema de optimización asociado a la planificación inversa en IMRT corresponde originalmente a un problema con restricciones. La función objetivo debe minimizarse únicamente dentro de la región admisible del espacio de variables definida por las condiciones de positividad.
+
+Sin embargo, muchos algoritmos de optimización numérica de alta eficiencia (particularmente los métodos quasi-Newton como L-BFGS) se formulan naturalmente para problemas irrestrictos definidos sobre:
+\[
+\mathbb{R}^N
+\]
+
+Cuando las restricciones de positividad se imponen explícitamente durante el proceso iterativo, suelen requerirse procedimientos adicionales de proyección o truncamiento de variables. Estas modificaciones pueden deteriorar las propiedades teóricas de convergencia del algoritmo y producir inestabilidades numéricas durante la búsqueda de la solución óptima.
+
+Para evitar este inconveniente, el problema puede reformularse mediante un cambio de variables que incorpore automáticamente la condición de no negatividad. La transformación utilizada en el presente trabajo adopta la forma:
+\[
+w_j=x_j^2
+\]
+
+donde:
+\[
+x_j\in\mathbb{R}
+\]
+
+corresponde a la nueva variable de optimización irrestricta.
+
+Debido a que el cuadrado de un número real es siempre no negativo, la condición física:
+\[
+w_j\geq0
+\]
+
+queda automáticamente satisfecha para cualquier valor real de:
+\[
+x_j
+\]
+
+De esta manera, el problema originalmente restringido se transforma en un problema irrestricto sobre:
+\[
+\mathbb{R}^N
+\]
+
+permitiendo aplicar directamente algoritmos quasi-Newton sin necesidad de incorporar mecanismos adicionales de proyección.
+
+La transformación modifica simultáneamente la relación entre intensidades y dosis absorbida. Sustituyendo:
+\[
+w_j=x_j^2
+\]
+
+en la ecuación de deposición de dosis:
+\[
+d_i=
+\sum_{j=1}^{N}
+A_{ij}w_j
+\]
+
+se obtiene:
+\[
+d_i=
+\sum_{j=1}^{N}
+A_{ij}x_j^2
+\]
+
+Como consecuencia, el problema deja de ser lineal respecto de las nuevas variables de optimización. Sin embargo, la función objetivo continúa siendo suave y diferenciable, propiedades fundamentales para la aplicación eficiente de métodos quasi-Newton basados en gradientes y aproximaciones de curvatura.
+
+A partir de esta reformulación, el problema de planificación inversa queda completamente definido como un problema irrestricto de optimización multivariable, adecuado para ser resuelto mediante el algoritmo L-BFGS.
