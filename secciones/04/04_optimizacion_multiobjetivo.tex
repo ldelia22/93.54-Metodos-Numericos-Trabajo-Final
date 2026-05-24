@@ -1,2 +1,41 @@
 \subsection{Optimización multiobjetivo}
 
+Como fue señalado en la sección anterior, la función objetivo global se construye como una combinación ponderada de los distintos objetivos clínicos:
+\[
+F_{\text{tot}}(x)
+=
+\sum_{m=1}^{M}
+\lambda_m F_m(x)
+\]
+
+Sin embargo, dependiendo de cómo se definan los coeficientes de ponderación \(\lambda_m\), se producirán distintas distribuciones de dosis óptimas, donde cada una prioriza de forma diferente la radiación sobre el tumor frente a la protección de órganos sanos. Por lo tanto, no existe una solución única sino un conjunto de soluciones igualmente válidas desde el punto de vista matemático, pero con distintas implicancias clínicas.
+
+Esta situación corresponde a un problema de optimización multiobjetivo. Formalmente, se busca el vector de intensidades \(x\) que optimice simultáneamente un conjunto de funciones objetivo \(F_1(x), F_2(x), \ldots, F_M(x)\) que se encuentran en conflicto entre sí. Como no existe un único óptimo global, surge el concepto de solución Pareto-óptima.
+
+\subsubsection*{Optimalidad de Pareto}
+
+Una solución \(x^{(1)}\) se dice que domina a otra solución \(x^{(2)}\) si no es peor que \(x^{(2)}\) en ninguno de los objetivos considerados, y es mejor en al menos uno de ellos. Una solución Pareto-óptima es aquella que no tenga ninguna otra solución que la domine. Y al conjunto de todas las soluciones Pareto-óptimas se lo llama el frente de Pareto.
+
+Cada punto sobre el frente de Pareto es un plan de tratamiento óptimo, donde mejorar algún objetivo implica necesariamente empeorar otro. La tarea del planificador consiste en seleccionar, dentro de este conjunto de soluciones igualmente óptimas, aquella que mejor se ajuste a los criterios clínicos del caso particular.
+
+\subsubsection*{Generación del frente de Pareto}
+
+El frente de Pareto se aproxima resolviendo el problema de optimización en múltiples instancias, variando en cada una de ellas los vectores de pesos \(\lambda_m\). Para el presente trabajo, cada combinación de pesos es un problema que se resuelve con L-BFGS.
+
+Para generar un conjunto representativo de soluciones, se utiliza un conjunto de vectores de pesos distribuidos uniformemente. Dado un parámetro de muestreo \(k\), el conjunto de vectores de pesos resulta:
+\[
+\mathcal{W}
+=
+\left\{
+[\lambda_1, \ldots, \lambda_M]
+\;\middle|\;
+\sum_{m=1}^{M} \lambda_m = 1;\;
+\lambda_m \in \left\{0,\,\tfrac{1}{k},\,\tfrac{2}{k},\ldots,1\right\}
+\right\}
+\]
+
+donde \(M\) es la cantidad de objetivos (en este caso, \(M\) = 3).
+
+\subsubsection*{Selección de la solución clínica}
+
+El proceso de selección de la solución depende del planificador, y se apoya en herramientas como histogramas dosis-volumen (DVH), que representan gráficamente cuánta dosis recibe cada fracción de los distintos órganos, así como en proyecciones bidimensionales del frente de Pareto entre pares de objetivos, para cuantificar cuánto compromiso existe entre ellos.

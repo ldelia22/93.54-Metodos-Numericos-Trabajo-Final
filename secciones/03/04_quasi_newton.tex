@@ -1,12 +1,12 @@
 \subsection{Métodos quasi-Newton}
 
-El método de Newton para optimización, desarrollado en la sección anterior, presenta una limitación práctica determinante: requiere calcular e invertir el Hessiano en cada iteración. Para un problema con \(n\) variables, el Hessiano es una matriz de \(n \times n\) elementos, lo que implica un costo de almacenamiento de orden \(\mathcal{O}(n^2)\) y un costo computacional de inversión de orden \(\mathcal{O}(n^3)\). En problemas de gran escala, como la planificación inversa en radioterapia, donde el número de beamlets puede superar los miles, este requerimiento resulta inviable tanto en memoria como en tiempo de cómputo.
+El método de Newton desarrollado en la sección anterior presenta una limitación práctica: requiere calcular e invertir el Hessiano en cada iteración. Para un problema con \(n\) variables, el Hessiano es una matriz de \(n \times n\) elementos, lo que implica un costo de almacenamiento de orden \(\mathcal{O}(n^2)\) y un costo computacional de inversión de orden \(\mathcal{O}(n^3)\). En problemas de gran escala, como la planificación inversa en radioterapia, donde el número de beamlets puede superar los miles, este requerimiento resulta inviable tanto en memoria como en tiempo de cómputo.
 
 Los métodos quasi-Newton resuelven este problema construyendo una \textit{aproximación} del Hessiano inverso a partir de la información de gradiente acumulada a lo largo de las iteraciones, sin necesidad de calcularlo explícitamente. La idea central consiste en explotar el cambio observado en el gradiente entre iteraciones sucesivas para inferir información sobre la curvatura local de la función.
 
 \subsubsection*{Condición de secante}
 
-Considérense las cantidades definidas entre la iteración \(k\) y la iteración \(k+1\):
+Se definen para la iteración \(k\) y la iteración \(k+1\):
 \[
 s_k = x_{k+1} - x_k
 \]
@@ -23,17 +23,17 @@ f''(x) \approx \frac{f'(x_{k+1}) - f'(x_k)}{x_{k+1} - x_k} = \frac{y_k}{s_k}
 
 lo que equivale a:
 \[
-f''(x) \cdot s_k \approx y_k
+f''(x) \cdot s_k = y_k
 \]
 
-Generalizando esta relación a múltiples dimensiones, se obtiene la denominada \textit{condición de secante}:
+Generalizando esto a múltiples dimensiones, se obtiene la \textit{condición de secante}:
 \[
 H_{k+1}\, s_k = y_k
 \]
 
-Esta condición exige que la nueva aproximación del Hessiano sea consistente con la variación observada del gradiente. Sin embargo, esta sola ecuación no determina unívocamente \(H_{k+1}\): existe infinidad de matrices que la satisfacen. Es necesario imponer criterios adicionales para seleccionar una actualización bien definida.
+Esta condición exige que la nueva aproximación del Hessiano sea consistente con la variación observada del gradiente. Sin embargo, existe infinidad de matrices que la satisfacen por lo que es necesario imponer criterios adicionales para seleccionar una actualización bien definida.
 
-\subsubsection*{Construcción del Hessiano aproximado mediante multiplicadores de Lagrange}
+\subsubsection*{Aproximación del Hessiano mediante multiplicadores de Lagrange}
 
 El método BFGS (Broyden--Fletcher--Goldfarb--Shanno) selecciona la actualización \(H_{k+1}\) que, además de satisfacer la condición de secante, cambie lo menos posible respecto a la aproximación anterior \(H_k\). Formalmente, se busca la matriz que resuelva el siguiente problema de optimización restringida:
 \[
@@ -46,9 +46,9 @@ donde \(\|\cdot\|_F\) denota la norma de Frobenius, definida como:
 \|A\|_F = \sqrt{\sum_i \sum_j |a_{ij}|^2} = \sqrt{\operatorname{tr}(A^T A)}
 \]
 
-Esta norma es el análogo matricial de la norma euclidiana vectorial, y su valor es invariante ante multiplicaciones por matrices ortogonales. Al ser un problema de minimización restringida, se puede resolver a partir de los multiplicadores de Lagrange.
+Esta norma es el análogo matricial de la norma euclidiana vectorial, y su valor es invariante ante multiplicaciones por matrices ortogonales.
 
-Para resolver este problema, se introduce el funcional de Lagrange:
+Al ser un problema de minimización restringida, se puede resolver a partir del funcional de Lagrange:
 \[
 \mathcal{L}(H_{k+1},\, \lambda)
 =
@@ -135,7 +135,7 @@ H_k
 }
 \]
 
-donde \(I\) es la matriz identidad y \(H_0 = I\) es la inicialización estándar. Esta expresión constituye una actualización de rango 2 de la aproximación anterior: en cada iteración se incorpora nueva información de curvatura mediante la suma de dos matrices de rango 1. La estructura simétrica y la definición positiva de \(H_{k+1}\) quedan garantizadas siempre que \(y_k^T s_k > 0\), condición que se asegura mediante una búsqueda lineal adecuada.
+donde \(I\) es la matriz identidad y \(H_0 = I\) es la inicialización estándar. Esta expresión es conocida como una actualización de rango 2 de la aproximación anterior: en cada iteración se incorpora nueva información de curvatura mediante la suma de dos matrices de rango 1. La estructura simétrica y la definición positiva de \(H_{k+1}\) quedan garantizadas siempre que \(y_k^T s_k > 0\), condición que se asegura mediante una búsqueda lineal adecuada (falta poner qué sería esto).
 
 \subsubsection*{Limitación de memoria}
 
