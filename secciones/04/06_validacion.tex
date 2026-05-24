@@ -1,2 +1,29 @@
 \subsection{Validación del método}
 
+El método se validó en base a dos parámetros: si la solución converge al mismo resultado independientemente del punto de partida (convergencia global), y si ese resultado es efectivamente un mínimo global del problema y no un mínimo local (optimalidad global).
+
+\subsubsection*{Análisis de convergencia global}
+
+Se dice que un algoritmo de optimización es globalmente convergente si el resultado obtenido es independiente del valor inicial de las variables. Para verificar esta propiedad, los autores ejecutaron L-BFGS 100 veces con distintas fluencias iniciales aleatorias para cada conjunto de pesos \(\lambda_m\), y se compararon los valores de las funciones objetivo obtenidas en cada caso.
+
+El análisis fue realizado de forma independiente sobre tres casos de estudio: un paciente con tumor cerebral, un paciente con cáncer de próstata y un caso fantasma con un PTV en forma de letra C, que se eligió por ser una geometría generalmente difícil para IMRT por la forma del tumor en torno al órgano de riesgo. Para cada caso por separado, los resultados de las 100 repeticiones fueron prácticamente idénticos, lo que demuestra que el método es globalmente convergente bajo las condiciones establecidas para este experimento. Sólo en el 1\% de las optimizaciones se observaron desviaciones, atribuidas a convergencia prematura o atrapamiento en trayectorias degeneradas, que fueron posteriormente eliminadas mediante el mecanismo de perturbación descrito en la sección anterior.
+
+\subsubsection*{Comparación con \textit{Simulated Annealing}}
+
+La convergencia global no garantiza por sí sola que la solución obtenida sea un mínimo global del problema: podría ocurrir que el algoritmo converja siempre al mismo mínimo local. Para evaluar la optimalidad global de las soluciones, los autores compararon los resultados de L-BFGS con los obtenidos mediante el algoritmo de recocido simulado rápido (FSA, \textit{Fast Simulated Annealing}).
+
+El \textit{Simulated Annealing} es un algoritmo inspirado en el enfriamiento lento de un objeto: así como un átomo de un metal puede escapar de configuraciones energéticamente subóptimas siempre y cuando la temperatura sea suficientemente alta, el algoritmo acepta ocasionalmente soluciones peores que la actual con una probabilidad que decrece a lo largo de las iteraciones. Esto le permite escapar de mínimos locales que atraparían a un método de descenso puro. En la variante FSA utilizada por los autores, la probabilidad de aceptar un movimiento desfavorable sigue una distribución de Cauchy, lo que le confiere una mayor capacidad de exploración que las variantes estándar. Se puede demostrar que FSA converge asintóticamente al mínimo global (bajo ciertas condiciones, que aplican al presente trabajo); es por eso que se usó como referencia válida para determinar la detección de mínimos absolutos.
+
+La comparación se realizó sobre los tres casos de estudio, ejecutando FSA con hasta 2 millones de iteraciones y L-BFGS con hasta 5000 iteraciones. Los resultados mostraron que ambos métodos producen soluciones prácticamente equivalentes en términos de los valores de las funciones objetivo individuales y del frente de Pareto generado. Esto indica que las soluciones obtenidas por L-BFGS son globalmente óptimas para los objetivos de varianza considerados.
+
+En cuanto al costo computacional, FSA requirió entre 6 y 10 horas para una única optimización, mientras que L-BFGS obtuvo soluciones equivalentes en menos de 4 segundos, lo que implica una diferencia de aproximadamente tres órdenes de magnitud.
+
+\subsubsection*{Casos de estudio}
+
+\begin{itemize}
+    \item \textbf{Caso fantasma con PTV en forma de C}: geometría bidimensional con 567 beamlets y aproximadamente 14000 puntos de muestreo espacial, diseñada para ser un caso difícil dado que el órgano de riesgo está ubicado dentro de la concavidad del PTV.
+    \item \textbf{Tumor cerebral}: caso tridimensional con 856 beamlets y aproximadamente 29000 puntos de muestreo, con cuatro estructuras anatómicas (PTV, tejido sano y ambos ojos).
+    \item \textbf{Cáncer de próstata}: caso tridimensional con 5464 beamlets y aproximadamente 39000 puntos de muestreo, con seis estructuras anatómicas (PTV, tejido sano, vejiga, recto y ambas cabezas femorales), representando el caso de mayor dimensionalidad analizado.
+\end{itemize}
+
+En todos los casos se utilizaron nueve haces de radiación, distribuidos angularmente a intervalos de 40°. Cada haz es una dirección macroscópica desde la que el IMRT irradia al paciente con muchos beamlets..
