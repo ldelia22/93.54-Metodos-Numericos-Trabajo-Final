@@ -1,1 +1,27 @@
 \subsection{Algoritmo L-BFGS}
+
+El algoritmo L-BFGS (\textit{Limited-memory BFGS}) resuelve la limitación de memoria del BFGS mediante una modificación: en lugar de almacenar la matriz \(H_k\) completa, únicamente se conservan los \(m\) pares de datos más recientes \(\{(s_j, y_j)\}_{j=k-m}^{k-1}\). La aproximación del Hessiano inverso se reconstruye implícitamente a partir de estos pares cada vez que se necesita calcular la dirección de descenso.
+
+\subsubsection*{Reducción del costo computacional}
+
+El costo de almacenamiento del BFGS estándar es \(\mathcal{O}(n^2)\), correspondiente a los \(n^2\) elementos de la matriz \(H_k\). En L-BFGS, almacenar \(m\) pares de vectores de dimensión \(n\) reduce este costo a \(\mathcal{O}(mn)\). En la práctica se utilizan valores pequeños de \(m\) (típicamente entre 3 y 20). Asimismo, el costo por iteración cae de \(\mathcal{O}(n^2)\) a \(\mathcal{O}(mn)\), ya que el producto \(H_k \nabla f_k\) se evalúa de forma recursiva utilizando sólo los pares almacenados, sin definir explícitamente la matriz \(H_k\) en ningún momento.
+
+\subsubsection*{Esquema iterativo completo}
+
+El algoritmo L-BFGS en su forma completa opera de la siguiente manera en cada iteración \(k\):
+
+\begin{enumerate}
+    \item Calcular el gradiente: \( g_k = \nabla f(x_k) \).
+    \item Calcular la dirección de descenso \(p_k = -H_k g_k\). Como \(H_k\) no se almacena explícitamente, este producto se evalúa mediante un procedimiento recursivo conocido como \textit{two-loop recursion}, que recorre los \(m\) pares almacenados en dos iteraciones y devuelve el resultado sin materializar la matriz en ningún momento.
+    \item Determinar el tamaño de paso \(\alpha_k\) mediante búsqueda lineal, satisfaciendo lo que se conoce como condiciones de Wolfe, que garantizan simultáneamente una reducción suficiente de la función objetivo (\textit{condición de Armijo}) y una variación adecuada del gradiente (\textit{condición de curvatura}).
+    \item Actualizar la posición: \( x_{k+1} = x_k + \alpha_k p_k \).
+    \item Calcular el nuevo par:
+    \[
+    s_k = x_{k+1} - x_k, \qquad y_k = g_{k+1} - g_k
+    \]
+    \item Incorporar el par \((s_k, y_k)\) al historial, descartando el par más antiguo si ya se almacenan \(m\) pares.
+\end{enumerate}
+
+\subsubsection*{Propiedades de convergencia}
+
+Bajo condiciones estándares de la función objetivo, L-BFGS presenta una convergencia superlineal en la práctica (es decir, supera la velocidad lineal a medida que converge a una respuesta), aunque sin la garantía teórica de convergencia cuadrática del método de Newton. Esto se debe a que el Hessiano es un aproximado construido a partir de un número \(m\) de pares de datos, valor que define un compromiso entre la precisión de la aproximación y el costo computacional. Sin embargo, en problemas de gran escala, otros métodos resultan computacionalmente inviables y con una convergencia lenta, incluso para valores de \(m\) entre 5 y 10.
