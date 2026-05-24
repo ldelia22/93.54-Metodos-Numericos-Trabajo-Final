@@ -1,2 +1,58 @@
 \subsection{Implementación computacional}
 
+La implementación del método de planificación inversa propuesta por Lahanas et al.\ se basa en aplicar el algoritmo L-BFGS sobre la función objetivo global \(F_{\text{tot}}(x)\), utilizando el cambio de variables \(w_j = x_j^2\) para eliminar las restricciones de positividad.
+
+\subsubsection*{Parámetros del algoritmo}
+
+La implementación utiliza L-BFGS con \(m = 5\) pares almacenados \(\{(s_j, y_j)\}\), valor que el propio algoritmo de Liu y Nocedal recomienda para problemas de gran escala. Con este valor, el costo computacional por iteración es de \(4mN = 20N\) operaciones para calcular la dirección de descenso, frente a las \(\mathcal{O}(N^2)\) operaciones que requeriría BFGS estándar.
+
+El algoritmo utiliza dos criterios para saber cuándo detener el programa. En primer lugar, se detiene si se alcanza un número máximo de iteraciones predefinido (que se establece como cota máxima de búsqueda). Pero puede detenerse antes de alcanzar el máximo, si se satisface el criterio de convergencia en gradiente:
+\[
+\frac{\|\nabla F(x_k)\|^2}{\max(1,\,\|x_k\|^2)}
+<
+\varepsilon
+\]
+
+donde \(\varepsilon\) es una tolerancia especificada. Se observa de la ecuación que el criterio normaliza la magnitud del gradiente en base al tamaño de la solución actual; de esta forma, evita que la convergencia dependa de qué tan masivo sea el problema.
+
+\subsubsection*{Cálculo del gradiente}
+ 
+En cada iteración, L-BFGS requiere evaluar el gradiente de \(F_{\text{tot}}\) respecto de las variables de optimización \(x_j\). Dado el cambio de variables \(w_j = x_j^2\), el gradiente respecto de \(x_j\) se obtiene por la regla de la cadena:
+\[
+\frac{\partial F_{\text{tot}}}{\partial x_j}
+=
+\frac{\partial F_{\text{tot}}}{\partial w_j}
+\cdot
+\frac{\partial w_j}{\partial x_j}
+=
+\frac{\partial F_{\text{tot}}}{\partial w_j}
+\cdot
+2x_j
+\]
+ 
+El término \(\partial F_{\text{tot}}/\partial w_j\) se calcula a partir de las derivadas de cada función objetivo respecto de las intensidades \(w_j\). Recordando que la dosis en cada vóxel es \(d_i = \sum_j A_{ij} w_j\), donde \(A_{ij}\) es la matriz de deposición de dosis definida en la sección anterior, se puede derivar cada función objetivo analíticamente. Por ejemplo, para el PTV:
+\[
+\frac{\partial F_{\text{PTV}}}{\partial w_j}
+=
+\frac{2}{N_{\text{PTV}}}
+\sum_{i \in \text{PTV}}
+\left(\sum_{k} A_{ik} w_k - D_{\text{ref}}\right) A_{ij}
+\]
+ 
+El resultado es una expresión cerrada en términos de cantidades ya conocidas: los coeficientes \(A_{ij}\), las dosis actuales \(d_i\) y la dosis prescrita \(D_{\text{ref}}\). Análogamente, las funciones \(F_{\text{NT}}\) y \(F_{\text{OAR}}\) producen expresiones de la misma forma. El hecho de que todas las funciones objetivo sean cuadráticas en \(d_i\) —y que \(d_i\) sea lineal en \(w_j\)— garantiza que estas derivadas sean expresiones algebraicas simples que pueden evaluarse directamente, sin necesidad de aproximar el gradiente mediante diferencias finitas entre evaluaciones de la función objetivo.
+
+\subsubsection*{Mecanismo de corrección de convergencia}
+
+En una fracción pequeña de las soluciones halladas (aproximadamente el 1\%, según informan en el trabajo), L-BFGS puede quedar atrapado en un mínimo local, o en trayectorias de convergencia muy lenta, o cuando oscila entre regiones sin progresar. Para solucionar este problema, lo que hicieron los autores es introducir una perturbación controlada durante la optimización.
+
+Cada 100 iteraciones, se le sumó a todas las variables \(x_j\) una constante de perturbación que comienza en \(10^{-5}\) y se reduce por un factor de 10 en cada aplicación. La corrección se aplica únicamente tres veces durante el proceso de optimización. El objetivo de esta perturbación es desplazar levemente la trayectoria de optimización para escapar de esas órbitas cerradas o zonas de convergencia lenta, de modo que L-BFGS pueda retomar el descenso hacia el mínimo global, sin alterar significativamente la solución encontrada (por ello es necesario una perturbación suficientemente pequeña).
+
+\subsubsection*{Escala de las funciones objetivo}
+
+Al usar un vector de pesos \(\lambda_m\) distribuido uniformemente entre los distintos objetivos, puede ocurrir que los valores que tomen las funciones objetivo durante la optimización difieran en varios órdenes de magnitud. Esto se debe a que la función del PTV mide desviaciones cuadráticas respecto de la dosis prescrita, que en una solución razonablemente buena son pequeñas, mientras que las funciones del tejido sano y los órganos de riesgo acumulan contribuciones de muchos vóxeles con dosis absolutas más grandes. En consecuencia, con pesos iguales, la función objetivo total queda dominada por los términos asociados a órganos sanos, y la optimización tiende a priorizar estos sobre la cobertura tumoral, produciendo soluciones clínicamente inaceptables.
+ 
+Para corregir esto, se introduce un parámetro de escala \(s\) que multiplica el peso asignado al PTV antes de normalizar el vector de pesos. Es decir, si el vector de pesos original asigna un valor \(\tilde{\lambda}_{\text{PTV}}\) al PTV, el peso efectivo utilizado es \(s \cdot \tilde{\lambda}_{\text{PTV}}\), y luego todos los pesos se renormalizan para que sumen 1. En el presente trabajo, los autores utilizaron \(s = 100\) y así se aseguraron que el PTV reciba un peso efectivamente mayor en la función global. El paper no detalla la justificación teórica de este valor específico, sino que lo reporta como resultado empírico: con \(s = 100\) se obtiene una fracción significativamente mayor de soluciones clínicamente relevantes en el frente de Pareto generado.
+
+\subsubsection*{Costo computacional}
+
+La implementación fue evaluada sobre un procesador Intel Pentium III a 933 MHz con 512 MB de memoria RAM. Para el caso del cáncer de próstata, con 5464 beamlets y 40000 puntos de muestreo espacial considerando el NT y cuatro órganos de riesgo, una optimización monobjetivo completa requirió menos de 4 segundos. Este resultado pone de manifiesto la eficiencia computacional del método y su viabilidad para ser aplicado en la generación de grandes conjuntos de soluciones Pareto dentro de tiempos clínicamente razonables.
