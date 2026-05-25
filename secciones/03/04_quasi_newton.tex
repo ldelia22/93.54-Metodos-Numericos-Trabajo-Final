@@ -73,14 +73,14 @@ H_{k+1} = H_k - \lambda y_k^T
 
 Para que \(H_{k+1}\) sea simétrica, el término \(\lambda y_k^T\) debe serlo también. Llamando \(A = \lambda y_k^T = A^T\) a dicho término simétrico, la expresión anterior toma la forma:
 \[
-H_{k+1} = H_k + A
+H_{k+1} = H_k - A
 \]
 
 Imponiendo ahora la condición de secante sobre esta expresión:
 \[
-(H_k + A)\, y_k = s_k
+(H_k - A)\, y_k = s_k
 \quad\Rightarrow\quad
-A\, y_k = s_k - H_k\, y_k
+A\, y_k = H_k - s_k\, y_k
 \]
 
 La matriz simétrica \(A\) más pequeña en norma de Frobenius que satisface esta ecuación corresponde a una \textit{actualización de rango 2}, cuya forma explícita resulta:
