@@ -39,7 +39,7 @@ El término \(\partial F_{\text{tot}}/\partial w_j\) se calcula a partir de las 
 \left(\sum_{k} A_{ik} w_k - D_{\text{ref}}\right) A_{ij}
 \]
  
-El resultado es una expresión cerrada en términos de cantidades ya conocidas: los coeficientes \(A_{ij}\), las dosis actuales \(d_i\) y la dosis prescrita \(D_{\text{ref}}\). Análogamente, las funciones \(F_{\text{NT}}\) y \(F_{\text{OAR}}\) producen expresiones de la misma forma. El hecho de que todas las funciones objetivo sean cuadráticas en \(d_i\) —y que \(d_i\) sea lineal en \(w_j\)— garantiza que estas derivadas sean expresiones algebraicas simples que pueden evaluarse directamente, sin necesidad de aproximar el gradiente mediante diferencias finitas entre evaluaciones de la función objetivo.
+El resultado es una expresión cerrada en términos de cantidades ya conocidas: los coeficientes \(A_{ij}\), las dosis actuales \(d_i\) y la dosis prescrita \(D_{\text{ref}}\). Análogamente, las funciones \(F_{\text{NT}}\) y \(F_{\text{OAR}}\) producen expresiones de la misma forma. El hecho de que todas las funciones objetivo sean cuadráticas en \(d_i\), y que \(d_i\) sea lineal en \(w_j\), garantiza que estas derivadas sean expresiones algebraicas simples que pueden evaluarse directamente, sin necesidad de aproximar el gradiente mediante diferencias finitas entre evaluaciones de la función objetivo.
 
 \subsubsection*{Mecanismo de corrección de convergencia}
 
