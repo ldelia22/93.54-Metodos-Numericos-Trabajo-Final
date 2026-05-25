@@ -4,7 +4,7 @@ El método se validó en base a dos parámetros: si la solución converge al mis
 
 \subsubsection*{Análisis de convergencia global}
 
-Se dice que un algoritmo de optimización es globalmente convergente si el resultado obtenido es independiente del valor inicial de las variables. Para verificar esta propiedad, los autores ejecutaron L-BFGS 100 veces con distintas fluencias iniciales aleatorias para cada conjunto de pesos \(\lambda_m\), y se compararon los valores de las funciones objetivo obtenidas en cada caso.
+Se dice que un algoritmo de optimización es globalmente convergente si el resultado al que converge es el mismo independientemente del valor inicial de las variables. Para verificar esta propiedad, los autores ejecutaron L-BFGS 100 veces con distintas fluencias iniciales aleatorias para cada conjunto de pesos \(\lambda_m\), y se compararon los valores de las funciones objetivo obtenidas en cada caso.
 
 El análisis fue realizado de forma independiente sobre tres casos de estudio: un paciente con tumor cerebral, un paciente con cáncer de próstata y un caso fantasma con un PTV en forma de letra C, que se eligió por ser una geometría generalmente difícil para IMRT por la forma del tumor en torno al órgano de riesgo. Para cada caso por separado, los resultados de las 100 repeticiones fueron prácticamente idénticos, lo que demuestra que el método es globalmente convergente bajo las condiciones establecidas para este experimento. Sólo en el 1\% de las optimizaciones se observaron desviaciones, atribuidas a convergencia prematura o atrapamiento en trayectorias degeneradas, que fueron posteriormente eliminadas mediante el mecanismo de perturbación descrito en la sección anterior.
 

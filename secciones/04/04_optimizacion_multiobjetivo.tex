@@ -22,7 +22,7 @@ Cada punto sobre el frente de Pareto es un plan de tratamiento óptimo, donde me
 
 El frente de Pareto se aproxima resolviendo el problema de optimización en múltiples instancias, variando en cada una de ellas los vectores de pesos \(\lambda_m\). Para el presente trabajo, cada combinación de pesos es un problema que se resuelve con L-BFGS.
 
-Para generar un conjunto representativo de soluciones, se utiliza un conjunto de vectores de pesos distribuidos uniformemente. Dado un parámetro de muestreo \(k\), el conjunto de vectores de pesos resulta:
+Para generar un conjunto representativo de soluciones, se utiliza un conjunto de vectores de pesos distribuidos uniformemente. Dado un parámetro de muestreo \(k\) y una cantidad de objetivos \(M\), el conjunto de vectores de pesos resulta:
 \[
 \mathcal{W}
 =
@@ -33,8 +33,6 @@ Para generar un conjunto representativo de soluciones, se utiliza un conjunto de
 \lambda_m \in \left\{0,\,\tfrac{1}{k},\,\tfrac{2}{k},\ldots,1\right\}
 \right\}
 \]
-
-donde \(M\) es la cantidad de objetivos (donde M es la cantidad de objetivos del caso analizado).
 
 \subsubsection*{Selección de la solución clínica}
 

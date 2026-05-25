@@ -43,7 +43,7 @@ El resultado es una expresión cerrada en términos de cantidades ya conocidas: 
 
 \subsubsection*{Mecanismo de corrección de convergencia}
 
-En una fracción pequeña de las soluciones halladas (aproximadamente el 1\%, según informan en el trabajo), L-BFGS puede quedar atrapado en un mínimo local, o en trayectorias de convergencia muy lenta, o cuando oscila entre regiones sin progresar. Para solucionar este problema, lo que hicieron los autores es introducir una perturbación controlada durante la optimización.
+En una fracción pequeña de las soluciones halladas (aproximadamente el 1\%, según informan los autores), L-BFGS puede quedar atrapado en un mínimo local, o en trayectorias de convergencia muy lenta, o cuando oscila entre regiones sin progresar. Para solucionar este problema, lo que hicieron los autores es introducir una perturbación controlada durante la optimización.
 
 Cada 100 iteraciones, se le sumó a todas las variables \(x_j\) una constante de perturbación que comienza en \(10^{-5}\) y se reduce por un factor de 10 en cada aplicación. La corrección se aplica únicamente tres veces durante el proceso de optimización. El objetivo de esta perturbación es desplazar levemente la trayectoria de optimización para escapar de esas órbitas cerradas o zonas de convergencia lenta, de modo que L-BFGS pueda retomar el descenso hacia el mínimo global, sin alterar significativamente la solución encontrada (por ello es necesario una perturbación suficientemente pequeña).
 
