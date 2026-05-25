@@ -13,7 +13,7 @@ El algoritmo L-BFGS en su forma completa opera de la siguiente manera en cada it
 \begin{enumerate}
     \item Calcular el gradiente: \( g_k = \nabla f(x_k) \).
     \item Calcular la dirección de descenso \(p_k = -H_k g_k\). Como \(H_k\) no se almacena explícitamente, este producto se evalúa mediante un procedimiento recursivo conocido como \textit{two-loop recursion}, que recorre los \(m\) pares almacenados en dos iteraciones y devuelve el resultado sin materializar la matriz en ningún momento.
-    \item Determinar el tamaño de paso \(\alpha_k\) mediante búsqueda lineal, satisfaciendo lo que se conoce como condiciones de Wolfe, que garantizan simultáneamente una reducción suficiente de la función objetivo (\textit{condición de Armijo}) y una variación adecuada del gradiente (\textit{condición de curvatura}).
+    \item Determinar el tamaño de paso \(\alpha_k\) mediante una búsqueda lineal que satisfaga las condiciones de Wolfe.
     \item Actualizar la posición: \( x_{k+1} = x_k + \alpha_k p_k \).
     \item Calcular el nuevo par:
     \[

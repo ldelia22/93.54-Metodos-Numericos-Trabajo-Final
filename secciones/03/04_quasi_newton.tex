@@ -135,7 +135,7 @@ H_k
 }
 \]
 
-donde \(I\) es la matriz identidad y \(H_0 = I\) es la inicialización estándar. Esta expresión es conocida como una actualización de rango 2 de la aproximación anterior: en cada iteración se incorpora nueva información de curvatura mediante la suma de dos matrices de rango 1. La estructura simétrica y la definición positiva de \(H_{k+1}\) quedan garantizadas siempre que \(y_k^T s_k > 0\), condición que se asegura mediante una búsqueda lineal adecuada (falta poner qué sería esto).
+donde \(I\) es la matriz identidad y \(H_0 = I\) es la inicialización estándar. Esta expresión es conocida como una actualización de rango 2 de la aproximación anterior: en cada iteración se incorpora nueva información de curvatura mediante la suma de dos matrices de rango 1. La estructura simétrica y la definición positiva de \(H_{k+1}\) quedan garantizadas siempre que \(y_k^T s_k > 0\), condición que se asegura mediante una búsqueda lineal adecuada que satisfaga las llamadas \textit{condiciones de Wolfe}. Resumidamente, estas condiciones garantizan simultáneamente una reducción suficiente de la función objetivo (\textit{condición de Armijo}) y una variación adecuada del gradiente (\textit{condición de curvatura}).
 
 \subsubsection*{Limitación de memoria}
 

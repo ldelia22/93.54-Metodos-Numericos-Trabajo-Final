@@ -92,7 +92,7 @@ La figura~\ref{fig:pareto_c} muestra las tres proyecciones bidimensionales del f
     \label{fig:pareto_c}
 \end{figure}
 
-La figura~\ref{fig:dvh_c} muestra los DVH para el conjunto de soluciones generadas. Cada curva representa un plan de tratamiento diferente: el eje horizontal es la dosis normalizada respecto de la prescrita (\(D/D_{\text{ref}}\)) y el eje vertical es el porcentaje del volumen del órgano que recibe al menos esa dosis. Para el PTV, todas las soluciones filtradas presentan DVH similares, con la curva cayendo abruptamente cerca de \(D/D_{\text{ref}} = 1\), lo que indica cobertura casi completa a la dosis prescrita. Se observa además que usar \(D_{\text{crit}} = 0\) (columna derecha) permite que haya más solucionse para el OAR en comparación a cuando \(D_{\text{crit}} = 0{,}5\,D_{\text{ref}}\) (columna izquierda). Esto se debe a que, al no imponer un umbral de penalización, el algoritmo explora toda la región del espacio de dosis y puede encontrar planes con menor dosis en el OAR.
+La figura~\ref{fig:dvh_c} muestra los DVH para el conjunto de soluciones generadas. Cada curva representa un plan de tratamiento diferente: el eje horizontal es la dosis normalizada respecto de la prescrita (\(D/D_{\text{ref}}\)) y el eje vertical es el porcentaje del volumen del órgano que recibe al menos esa dosis. Para el PTV, todas las soluciones filtradas presentan DVH similares, con la curva cayendo abruptamente cerca de \(D/D_{\text{ref}} = 1\), lo que indica cobertura casi completa a la dosis prescrita. Se observa además que usar \(D_{\text{crit}} = 0\) (columna derecha) permite que haya más soluciones para el OAR en comparación a cuando \(D_{\text{crit}} = 0{,}5\,D_{\text{ref}}\) (columna izquierda). Esto se debe a que, al no imponer un umbral de penalización, el algoritmo explora toda la región del espacio de dosis y puede encontrar planes con menor dosis en el OAR.
 
 \begin{figure}[H]
     \centering
@@ -114,7 +114,7 @@ Para el caso de tumor cerebral, la figura~\ref{fig:dvh_cerebro} muestra los DVH 
 
 \subsubsection*{Caso cáncer de próstata}
 
-La figura~\ref{fig:pareto_prostata} muestra las proyecciones del frente de Pareto sobre \((F_{\text{PTV}}, F_{\text{OAR}})\) para cada uno de los cuatro OARs. Se observa que para vejiga y recto, al reducir la varianza en el PTV aumenta mucho la dosis en estas estructuras. En cambio, para las cabezas femorales no ocurre esto (que se debe a su posición). La escala es doblemente logarítmica para revelar la estructura fina del frente en las zonas de bajo \(F_{\text{PTV}}\).
+La figura~\ref{fig:pareto_prostata} muestra las proyecciones del frente de Pareto sobre \((F_{\text{PTV}}, F_{\text{OAR}})\) para cada uno de los cuatro OARs. Se observa que para vejiga y recto, al reducir la varianza en el PTV aumenta mucho la dosis en estas estructuras. En cambio, las cabezas femorales presentan una correlación más débil, dado que están colocadas lateralmente respecto del volumen de tratamiento. La escala es doblemente logarítmica para revelar la estructura fina del frente en las zonas de bajo \(F_{\text{PTV}}\).
 
 \begin{figure}[H]
     \centering
